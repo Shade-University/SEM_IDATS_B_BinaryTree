@@ -1,0 +1,323 @@
+package kolekce;
+
+import java.util.Iterator;
+import kolekce.interfaces.AbstrTableInterface;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+/**
+ *
+ * @author user
+ */
+public class AbstrTableTest {
+
+    private static AbstrTableInterface table;
+
+    public AbstrTableTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+    }
+
+    @Before
+    public void setUp() {
+        table = new AbstrTable();
+    }
+
+    @After
+    public void tearDown() {
+    }
+
+    private static void assertExpected(String testName, Object[] expected) {
+
+        Iterator iterator = table.vytvorIterator(eTypProhl.SIRKA);
+
+        System.out.println(testName);
+        System.out.println("===========================");
+        System.out.print("Expected:\t");
+        for (Object object : expected) {
+            System.out.print(object + " ");
+        }
+        System.out.println("");
+
+        System.out.print("Given:\t\t");
+        for (Object object : expected) {
+            Object given = iterator.next();
+            System.out.print(given + " ");
+            assertEquals(object, given);
+        }
+        System.out.println("");
+        System.out.println("---------------------------");
+
+    }
+
+    /**
+     * Test of zrus method, of class AbstrTable.
+     *
+     * @throws kolekce.KolekceException
+     */
+    @Test
+    public void testZrus() throws KolekceException {
+        table.vloz("A", "A1");
+        assertFalse(table.jePrazdny());
+        table.zrus();
+        assertTrue(table.jePrazdny());
+    }
+
+    /**
+     * Test of jePrazdny method, of class AbstrTable.
+     *
+     * @throws kolekce.KolekceException
+     */
+    @Test
+    public void testJePrazdny() throws KolekceException {
+        assertTrue(table.jePrazdny());
+
+        table.vloz("A", "A1");
+        assertFalse(table.jePrazdny());
+
+        table.odeber("A");
+        assertTrue(table.jePrazdny());
+
+        table.vloz("A", "A1");
+        table.zrus();
+        assertTrue(table.jePrazdny());
+
+    }
+
+    /**
+     * Test of najdi method, of class AbstrTable.
+     *
+     * @throws kolekce.KolekceException
+     */
+    @Test
+    public void testNajdi() throws KolekceException {
+        table.vloz("A", "A1");
+        table.vloz("B", "A2");
+        table.vloz("C", "A3");
+        table.vloz("D", "A4");
+
+        assertEquals("A1", table.najdi("A"));
+        assertEquals("A4", table.najdi("D"));
+        assertEquals("A2", table.najdi("B"));
+        assertEquals("A3", table.najdi("C"));
+
+    }
+
+    /**
+     * Test of vloz method, of class AbstrTable.
+     *
+     * @throws kolekce.KolekceException
+     *
+     * C
+     * A F
+     * B D
+     * E
+     */
+    @Test
+    public void testVloz() throws KolekceException {
+
+        table.vloz("C", "C1");
+        table.vloz("F", "F1");
+        table.vloz("D", "D1");
+        table.vloz("E", "E1");
+        table.vloz("A", "A1");
+        table.vloz("B", "B1");
+
+        assertExpected(getClass().getName(),
+                new String[]{"C1", "A1", "F1", "B1", "D1", "E1"});
+    }
+
+    @Test(expected = KolekceException.class)
+    public void testVloz_Exception01() throws KolekceException {
+        table.vloz(null, null);
+        fail();
+    }
+
+    @Test(expected = KolekceException.class)
+    public void testVloz_Exception02() throws KolekceException {
+        table.vloz(null, "C");
+        fail();
+    }
+
+    @Test(expected = KolekceException.class)
+    public void testVloz_Exception03() throws KolekceException {
+        table.vloz("C", null);
+        fail();
+    }
+
+    @Test(expected = KolekceException.class)
+    public void testVloz_Exception04() throws KolekceException {
+        table.vloz("C", "C");
+        table.vloz("C", "awf");
+        fail();
+    }
+
+    /**
+     * Test of odeber method, of class AbstrTable.
+     *
+     * @throws kolekce.KolekceException
+     *
+     * C
+     * A F
+     * B D
+     * E
+     */
+    @Test
+    public void testOdeber_01() throws KolekceException {
+        String className = getClass().getName();
+        table.vloz("C", "C1");
+        table.vloz("F", "F1");
+        table.vloz("D", "D1");
+        table.vloz("E", "E1");
+        table.vloz("A", "A1");
+        table.vloz("B", "B1");
+
+        table.odeber("C");
+        assertExpected(className, new String[]{
+            "D1", "A1", "F1", "B1", "E1"
+        }); //root
+
+        table.odeber("E");
+        assertExpected(className, new String[]{
+            "D1", "A1", "F1", "B1"
+        });
+
+        table.odeber("F");
+        assertExpected(className, new String[]{
+            "D1", "A1", "B1"
+        });
+    }
+
+    @Test
+    public void testOdeber_02() throws KolekceException {
+        String className = getClass().getName();
+
+        table.vloz("A", "A1");
+        table.vloz("B", "B1");
+        table.vloz("C", "C1");
+
+        Object output = table.odeber("T");
+        assertNull(output);
+
+        assertExpected(className, new String[]{
+            "A1", "B1", "C1"
+        });
+    }
+
+    @Test
+    public void testOdeber_03() throws KolekceException {
+        String className = getClass().getName();
+
+        table.vloz("A", "A1");
+        table.vloz("B", "B1");
+        table.vloz("C", "C1");
+
+        Object output = table.odeber("A");
+        assertEquals("A1", output);
+
+        Object output_2 = table.odeber("C");
+        assertEquals("C1", output_2);
+
+        Object output_3 = table.odeber("B");
+        assertEquals("B1", output_3);
+
+        Object output_4 = table.odeber("B");
+        assertNull(output_4);
+
+    }
+
+    /**
+     * Test of vytvorIterator method, of class AbstrTable.
+     *
+     * @throws kolekce.KolekceException
+     */
+    @Test
+    public void testVytvorIterator_Breath() throws KolekceException {
+        String className = getClass().getName();
+        table.vloz("C", "C1");
+        table.vloz("F", "F1");
+        table.vloz("D", "D1");
+        table.vloz("E", "E1");
+        table.vloz("A", "A1");
+        table.vloz("B", "B1");
+
+        assertExpected(getClass().getName(),
+                new String[]{"C1", "A1", "F1", "B1", "D1", "E1"});
+
+    }
+
+    /**
+     * Test of vytvorIterator method, of class AbstrTable.
+     *
+     * @throws kolekce.KolekceException
+     *
+     * 5
+     * 3 6
+     * 2 4 7
+     * 1 8
+     */
+    @Test
+    public void testVytvorIterator_Depth() throws KolekceException {
+        String className = getClass().getName();
+        table.vloz("5", "5");
+        table.vloz("3", "3");
+        table.vloz("2", "2");
+        table.vloz("4", "4");
+        table.vloz("1", "1");
+        table.vloz("6", "6");
+        table.vloz("7", "7");
+        table.vloz("8", "8");
+
+        Iterator iterator = table.vytvorIterator(eTypProhl.HLOUBKA);
+
+        String[] expected = new String[]{
+            "1", "2", "3", "4", "5", "6", "7", "8"
+        };
+        for (String string : expected) {
+            assertEquals(string, iterator.next());
+        }
+
+    }
+
+    @Test
+    public void testVytvorIterator_Depth_02() throws KolekceException {
+        String className = getClass().getName();
+        table.vloz("25", "25");
+        table.vloz("15", "15");
+        table.vloz("50", "50");
+        table.vloz("10", "10");
+        table.vloz("22", "22");
+        table.vloz("35", "35");
+        table.vloz("70", "70");
+        table.vloz("04", "04");
+        table.vloz("12", "12");
+        table.vloz("18", "18");
+        table.vloz("24", "24");
+        table.vloz("31", "31");
+        table.vloz("44", "44");
+        table.vloz("66", "66");
+        table.vloz("90", "90");
+
+        Iterator iterator = table.vytvorIterator(eTypProhl.HLOUBKA);
+
+        String[] expected = new String[]{
+            "04", "10", "12", "15", "18", "22", "24", "25", "31", "35", "44", "50", "66", "70", "90"
+        };
+        for (String string : expected) {
+            assertEquals(string, iterator.next());
+        }
+
+    }
+
+}

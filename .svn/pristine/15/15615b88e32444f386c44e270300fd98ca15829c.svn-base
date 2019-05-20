@@ -1,0 +1,28 @@
+package idats_b_vondra;
+
+import kolekce.AbstrTable;
+import kolekce.BinaryTreeException;
+import kolekce.interfaces.AbstrTableInterface;
+
+/**
+ *
+ * @author user
+ */
+public class IDATS_B_Vondra {
+
+    /**
+     * @param args the command line arguments
+     * @throws kolekce.BinaryTreeException
+     */
+    public static void main(String[] args) throws BinaryTreeException {
+        AbstrTableInterface<String,String> table = new AbstrTable<>();
+        
+        table.vloz("D", "A1");
+        table.vloz("E", "A2");
+        table.vloz("C", "A3");
+        table.vloz("A", "A4");
+        
+        System.out.println(table.najdi("C"));
+    }
+    
+}

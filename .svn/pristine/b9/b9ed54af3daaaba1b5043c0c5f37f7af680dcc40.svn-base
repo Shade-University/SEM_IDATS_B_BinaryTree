@@ -1,0 +1,185 @@
+package kolekce;
+
+import kolekce.interfaces.AbstrTableInterface;
+import java.util.Iterator;
+
+/**
+ *
+ * @author Tomáš Vondra
+ * @param <K>
+ * @param <V>
+ */
+public class AbstrTable<K extends Comparable<K>, V> implements AbstrTableInterface<K, V> {
+
+    private BinaryTreeNode root;
+
+    //TODO private, static, public class ?
+    public class BinaryTreeNode {
+
+        private K key;
+        private V value;
+        private BinaryTreeNode left;
+        private BinaryTreeNode right;
+
+        public K getKey() {
+            return key;
+        }
+
+        public void setKey(K key) {
+            this.key = key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        public void setValue(V value) {
+            this.value = value;
+        }
+
+        public BinaryTreeNode getLeft() {
+            return left;
+        }
+
+        public void setLeft(BinaryTreeNode left) {
+            this.left = left;
+        }
+
+        public BinaryTreeNode getRight() {
+            return right;
+        }
+
+        public void setRight(BinaryTreeNode right) {
+            this.right = right;
+        }
+
+        public BinaryTreeNode(K key, V value) {
+            this.key = key;
+            this.value = value;
+            this.left = null;
+            this.right = null;
+        }
+
+        public BinaryTreeNode(BinaryTreeNode left, BinaryTreeNode right, K key, V value) {
+            this.key = key;
+            this.left = left;
+            this.right = right;
+            this.value = value;
+        }
+    }
+        //TODO MÍCHÁNÍ ČESTINY, ANGLIČTINY
+    public AbstrTable() {
+        this.root = null;
+    }
+
+    public AbstrTable(BinaryTreeNode root) {
+        this.root = root;
+    }
+
+    @Override
+    public void zrus() {
+        root = null;
+    }
+
+    @Override
+    public boolean jePrazdny() {
+        return root == null;
+    }
+
+    @Override
+    public V najdi(K key) throws BinaryTreeException {
+        if(key == null) {
+            throw new BinaryTreeException("Nulový klíč");
+        }
+        return najdiRecursive(root, key);
+    }
+
+    @Override
+    public void vloz(K key, V value) throws BinaryTreeException {
+        if(key == null || value == null){
+            throw new BinaryTreeException("Nulové parametry");
+        }
+        root = vlozRecursive(root, key, value);
+    }
+
+    @Override
+    public V odeber(K key) throws BinaryTreeException {
+        if(key == null){
+            throw new BinaryTreeException("Nulový klíč");
+        }
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator vytvorIterator(eTypProhl typ) {
+        switch (typ) {
+            case INORDER:
+                return new inOrderIterator();
+            case PREORDER:
+                return new preOrderIterator();
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private BinaryTreeNode vlozRecursive(BinaryTreeNode node, K key, V value) {
+        if (node == null) {
+            node = new BinaryTreeNode(key, value);
+        } else if (key.compareTo(node.key) < 0) {
+            node.left = vlozRecursive(node.left, key, value);
+        } else if (key.compareTo(node.key) > 0) {
+            node.right = vlozRecursive(node.right, key, value);
+        }
+
+        return node;
+    }
+    
+    private V najdiRecursive(BinaryTreeNode node, K key) throws BinaryTreeException{
+        if (node == null) {
+            throw new BinaryTreeException("Strom je prázdný");
+        }
+        if (key.equals(node.getKey())) {
+            return node.getValue();
+        }
+
+        return key.compareTo(node.getKey()) < 0
+                ? najdiRecursive(node.left, key)
+                : najdiRecursive(node.right, key);
+    }
+
+    private class inOrderIterator implements Iterator<V> {
+
+        @Override
+        public boolean hasNext() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public V next() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void remove() {
+            Iterator.super.remove(); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
+    private class preOrderIterator implements Iterator<V> {
+
+        @Override
+        public boolean hasNext() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public V next() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void remove() {
+            Iterator.super.remove(); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+}

@@ -1,0 +1,94 @@
+package pamatky;
+
+import IO.FileReaderImpl;
+import IO.RegexMatcher;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Iterator;
+import kolekce.AbstrTable;
+import kolekce.KolekceException;
+import kolekce.eTypProhl;
+import kolekce.interfaces.AbstrTableInterface;
+
+/**
+ *
+ * @author Tomáš Vondra
+ */
+public class Pamatky implements PamatkyInterface {
+
+    private static final String SOUBOR = "data.csv";
+    private static final String IDPATTERN = "(\\d*?);"; //=> Vezme všechny čísla od začátku po ;
+    private static final String GPSPATTERN = "[N]\\d(.*?)[F]";  //=> Vyhledá N s nějakým číslem. Poté vezme všechno mezi tím a písmenem F.
+    private static final String NAZEVPATTERN = "2000(.*?)[\\^]"; //=> Vyhlledá všechno mezi stringem 2000 a ^. 
+
+    private final AbstrTableInterface<String, Zamek> table;
+    private eTypKey typKlice;
+
+    public Pamatky() {
+        table = new AbstrTable<>();
+        typKlice = eTypKey.NAZEV;
+    }
+
+    @Override
+    public int importDatZTXT() throws FileNotFoundException, IOException, KolekceException {
+        FileReaderImpl reader = new FileReaderImpl(SOUBOR);
+        String id;
+        String gps;
+        String nazev;
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            id = RegexMatcher.getMatch(line, IDPATTERN, 1);
+            gps = RegexMatcher.getMatch(line, GPSPATTERN, 0).replaceFirst(".$", "").trim();
+            //Abychom měli hezkou gps i s N, musíme vzít celej ten string. A z celého toho stringu odstranit F
+            nazev = RegexMatcher.getMatch(line, NAZEVPATTERN, 1).trim();
+            //Trim odstraní přebytečné mezery
+
+            Zamek zamek = new Zamek(Integer.parseInt(id), nazev, gps);
+            vlozZamek(zamek);
+        }
+
+        return 1;
+    }
+
+    @Override
+    public int vlozZamek(Zamek zamek) throws KolekceException {
+        String key = typKlice == eTypKey.GPS ? zamek.getGps() : zamek.getNazev();
+        table.vloz(key, zamek);
+
+        return 1; //TODO returny -1 v exception ?
+    }
+
+    @Override
+    public Zamek najdiZamek(String klic) throws KolekceException {
+        return table.najdi(klic);
+    }
+
+    @Override
+    public Zamek odeberZamek(String klic) throws KolekceException {
+        return table.odeber(klic);
+    }
+
+    @Override
+    public void zrus() {
+        table.zrus();
+    }
+
+    @Override
+    public void prebuduj() {
+        throw new UnsupportedOperationException();
+        //TODO PREBUDUJ
+    }
+
+    @Override
+    public void nastavKlic(eTypKey typ) {
+        typKlice = typ;
+        //TODO Prebuduj s novým klíčem
+    }
+
+    @Override
+    public Iterator vytvorIterator(eTypProhl typ) {
+        return table.vytvorIterator(typ);
+    }
+
+}

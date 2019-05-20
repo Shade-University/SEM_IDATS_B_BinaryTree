@@ -1,0 +1,10 @@
+package kolekce;
+
+/**
+ *
+ * @author user
+ */
+public enum eTypProhl {
+    INORDER,
+    PREORDER
+}

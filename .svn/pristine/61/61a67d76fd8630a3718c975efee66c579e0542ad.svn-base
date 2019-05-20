@@ -1,0 +1,26 @@
+
+package kolekce;
+
+/**
+ *
+ * @author Tomáš Vondra
+ */
+@SuppressWarnings("serial")
+public class BinaryTreeException extends Exception {
+
+    public BinaryTreeException() {
+    }
+
+    public BinaryTreeException(String message) {
+        super(message);
+    }
+
+    public BinaryTreeException(Throwable cause) {
+        super(cause);
+    }
+
+    public BinaryTreeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+}

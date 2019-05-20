@@ -1,0 +1,90 @@
+package pamatky;
+
+import IO.FileReaderImpl;
+import IO.RegexMatcher;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Iterator;
+import kolekce.AbstrTable;
+import kolekce.KolekceException;
+import kolekce.eTypProhl;
+import kolekce.interfaces.AbstrTableInterface;
+
+/**
+ *
+ * @author Tomáš Vondra
+ */
+public class Pamatky implements PamatkyInterface {
+
+    private static final String SOUBOR = "data.csv";
+    private final AbstrTableInterface<String, Zamek> table;
+    private eTypKey typKlice;
+
+    public Pamatky() {
+        table = new AbstrTable<>();
+        typKlice = eTypKey.GPS;
+    }
+
+    @Override
+    public int importDatZTXT() throws FileNotFoundException, IOException, KolekceException {
+        FileReaderImpl reader = new FileReaderImpl(SOUBOR);
+        String id;
+        String gps;
+        String nazev;
+        
+        String line;
+        while((line = reader.readLine()) != null){
+            id = RegexMatcher.getMatch(line, "(\\d*?);", 1);
+            //(\\d*?); => Vezme všechny čísla od začátku po ;
+            gps = RegexMatcher.getMatch(line, "[N]\\d(.*?)[F]", 0).replaceFirst(".$", "").trim();
+            //"[N]\\d(.*?)[F] => Vyhledá N s nějakým číslem. Poté vezme všechno mezi tím a písmenem F.
+            //Abychom měli hezkou gps i s N, musíme vzít celej ten string. A z celého toho stringu odstranit F
+            nazev = RegexMatcher.getMatch(line, "2000(.*?)[\\^]", 1).trim();
+            //2000(.*?)[\\^] => Vyhlledá všechno mezi stringem 2000 a ^. Trim odstraní přebytečné mezery
+            Zamek zamek = new Zamek(Integer.parseInt(id), nazev, gps);
+            vlozZamek(zamek);
+        }
+        
+        return 1;
+    }
+
+    @Override
+    public int vlozZamek(Zamek zamek) throws KolekceException {
+        String key = typKlice == eTypKey.GPS ? zamek.getGps() : zamek.getNazev();
+        table.vloz(key, zamek);
+
+        return 1;
+    }
+
+    @Override
+    public Zamek najdiZamek(String klic) throws KolekceException {
+        return table.najdi(klic);
+    }
+
+    @Override
+    public Zamek odeberZamek(String klic) throws KolekceException {
+        return table.odeber(klic);
+    }
+
+    @Override
+    public void zrus() {
+        table.zrus();
+    }
+
+    @Override
+    public void prebuduj() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void nastavKlic(eTypKey typ
+    ) {
+        typKlice = typ;
+    }
+
+    @Override
+    public Iterator vytvorIterator(eTypProhl typ) {
+        return table.vytvorIterator(typ);
+    }
+
+}

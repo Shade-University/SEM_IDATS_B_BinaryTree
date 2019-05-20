@@ -1,0 +1,20 @@
+package idats_b_vondra;
+
+import kolekce.AbstrTable;
+import kolekce.interfaces.AbstrTableInterface;
+
+/**
+ *
+ * @author user
+ */
+public class IDATS_B_Vondra {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        AbstrTableInterface<String,String> table = new AbstrTable<>();
+        
+    }
+    
+}

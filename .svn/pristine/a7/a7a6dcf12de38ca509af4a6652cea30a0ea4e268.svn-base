@@ -1,0 +1,121 @@
+package kolekce;
+
+import kolekce.interfaces.AbstrTableInterface;
+import java.util.Iterator;
+
+/**
+ *
+ * @author Tomáš Vondra
+ * @param <K>
+ * @param <V>
+ */
+public class AbstrTable<K extends Comparable<K>, V> implements AbstrTableInterface<K, V> {
+
+    private BinaryTreeNode root;
+
+    public class BinaryTreeNode {
+
+        private K key;
+        private V value;
+        private BinaryTreeNode left;
+        private BinaryTreeNode right;
+
+        public K getKey() {
+            return key;
+        }
+
+        public void setKey(K key) {
+            this.key = key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        public void setValue(V value) {
+            this.value = value;
+        }
+
+        public BinaryTreeNode getLeft() {
+            return left;
+        }
+
+        public void setLeft(BinaryTreeNode left) {
+            this.left = left;
+        }
+
+        public BinaryTreeNode getRight() {
+            return right;
+        }
+
+        public void setRight(BinaryTreeNode right) {
+            this.right = right;
+        }
+
+        public BinaryTreeNode(K key, V value) {
+            this.key = key;
+            this.value = value;
+            this.left = null;
+            this.right = null;
+        }
+
+        public BinaryTreeNode(BinaryTreeNode left, BinaryTreeNode right, K key, V value) {
+            this.key = key;
+            this.left = left;
+            this.right = right;
+            this.value = value;
+        }
+    }
+
+    public AbstrTable() {
+        this.root = null;
+    }
+
+    public AbstrTable(BinaryTreeNode root) {
+        this.root = root;
+    }
+
+    @Override
+    public void zrus() {
+        root = null;
+    }
+
+    @Override
+    public boolean jePrazdny() {
+        return root == null;
+    }
+
+    @Override
+    public V najdi(K key) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void vloz(K key, V value) {
+        root = vloz(root, key, value);
+    }
+
+    @Override
+    public V odeber(K key) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator vytvorIterator(eTypProhl typ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private BinaryTreeNode vloz(BinaryTreeNode node, K key, V value) {
+        if(node == null) {
+            node = new BinaryTreeNode(key, value);
+        }
+        else if (key.compareTo(node.key) < 0) {
+            node.left = vloz(node.left, key, value);
+        } else if (key.compareTo(node.key) > 0) {
+            node.right = vloz(node.right, key, value);
+        }
+        
+        return node;
+    }
+
+}

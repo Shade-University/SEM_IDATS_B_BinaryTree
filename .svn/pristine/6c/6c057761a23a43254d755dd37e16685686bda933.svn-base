@@ -1,0 +1,18 @@
+
+package gui;
+
+import javafx.scene.control.Dialog;
+import javafx.scene.layout.HBox;
+import pamatky.Zamek;
+
+/**
+ *
+ * @author Tomáš Vondra
+ */
+public class VlozZamekDialog extends Dialog<Zamek> {
+    
+    public VlozZamekDialog(){
+        
+    }
+
+}

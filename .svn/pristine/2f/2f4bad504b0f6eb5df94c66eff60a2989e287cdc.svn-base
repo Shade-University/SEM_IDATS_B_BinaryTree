@@ -1,0 +1,9 @@
+package kolekce;
+
+/**
+ *
+ * @author user
+ */
+public enum eTypProhl {
+    //TODO ENUM
+}

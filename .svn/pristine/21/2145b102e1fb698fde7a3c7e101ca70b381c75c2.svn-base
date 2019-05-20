@@ -1,0 +1,287 @@
+package kolekce;
+
+import kolekce.interfaces.AbstrTableInterface;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import kolekce.interfaces.AbstrFIFOInterface;
+import kolekce.interfaces.AbstrLIFOInterface;
+
+/**
+ *
+ * @author Tomáš Vondra
+ * @param <K>
+ * @param <V>
+ */
+public class AbstrTable<K extends Comparable<K>, V> implements AbstrTableInterface<K, V> {
+
+    private BinaryTreeNode root;
+
+    private class BinaryTreeNode {
+
+        private K key;
+        private V value;
+        private BinaryTreeNode left;
+        private BinaryTreeNode right;
+
+        public K getKey() {
+            return key;
+        }
+
+        public void setKey(K key) {
+            this.key = key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        public void setValue(V value) {
+            this.value = value;
+        }
+
+        public BinaryTreeNode getLeft() {
+            return left;
+        }
+
+        public void setLeft(BinaryTreeNode left) {
+            this.left = left;
+        }
+
+        public BinaryTreeNode getRight() {
+            return right;
+        }
+
+        public void setRight(BinaryTreeNode right) {
+            this.right = right;
+        }
+
+        public BinaryTreeNode(K key, V value) {
+            this.key = key;
+            this.value = value;
+            this.left = null;
+            this.right = null;
+        }
+
+        public BinaryTreeNode(BinaryTreeNode left, BinaryTreeNode right, K key, V value) {
+            this.key = key;
+            this.left = left;
+            this.right = right;
+            this.value = value;
+        }
+    }
+    //TODO MÍCHÁNÍ ČESTINY, ANGLIČTINY
+
+    public AbstrTable() {
+        this.root = null;
+    }
+
+    public AbstrTable(BinaryTreeNode root) {
+        this.root = root;
+    }
+
+    @Override
+    public void zrus() {
+        root = null;
+    }
+
+    @Override
+    public boolean jePrazdny() {
+        return root == null;
+    }
+
+    @Override
+    public V najdi(K key) throws BinaryTreeException {
+        if (key == null) {
+            throw new BinaryTreeException("Nulový klíč");
+        }
+        return najdiRecursive(root, key);
+    }
+
+    @Override
+    public void vloz(K key, V value) throws BinaryTreeException {
+        if (key == null || value == null) {
+            throw new BinaryTreeException("Nulové parametry");
+        }
+        root = vlozRecursive(root, key, value);
+    }
+
+    @Override
+    public V odeber(K key) throws BinaryTreeException {
+        if (key == null) {
+            throw new BinaryTreeException("Nulový klíč");
+        }
+        root = odeberRecursive(root, key);
+        return null;
+    }
+
+    @Override
+    public Iterator vytvorIterator(eTypProhl typ) {
+        switch (typ) {
+            case SIRKA:
+                return new BreathIterator();
+            case HLOUBKA:
+                return new DepthIterator();
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private BinaryTreeNode odeberRecursive(BinaryTreeNode node, K key) {
+
+        if (node == null) {
+            return node;
+        } //Strom je prázdný
+
+        if (key.compareTo(node.key) < 0) {
+            node.left = odeberRecursive(node.left, key);
+        } else if (key.compareTo(node.key) > 0) {
+            node.right = odeberRecursive(node.right, key);
+        } //Prozkoumej strom doleva/doprava podle hodnoty
+        else { //Pokud je klíč stejný, nalezen node
+
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            } //Pokud pouze jeden nebo žádný potomek
+
+            node.key = najdiNejmensiHodnotu(node.right);
+            node.right = odeberRecursive(node.right, node.key); //Dva potomci       
+        }
+        return node;
+    }
+
+    private K najdiNejmensiHodnotu(BinaryTreeNode root) {
+        return root.left == null ? root.key : najdiNejmensiHodnotu(root.left);
+    }
+
+    private BinaryTreeNode vlozRecursive(BinaryTreeNode node, K key, V value) {
+        if (node == null) {
+            node = new BinaryTreeNode(key, value); //nalezen prázdný list
+        } else if (key.compareTo(node.key) < 0) { //pokud je menší, jdi doleva
+            node.left = vlozRecursive(node.left, key, value);
+        } else if (key.compareTo(node.key) > 0) { //pokud větší, směruj doprava
+            node.right = vlozRecursive(node.right, key, value);
+        }
+
+        return node;
+    }
+
+    private V najdiRecursive(BinaryTreeNode node, K key) throws BinaryTreeException {
+        if (node == null) {
+            throw new BinaryTreeException("Strom je prázdný");
+        }
+        
+        if (key.equals(node.getKey())) {
+            return node.getValue();
+        } //nalezen
+
+        return key.compareTo(node.getKey()) < 0 //Směruj doprava nebo do leva
+                ? najdiRecursive(node.left, key)
+                : najdiRecursive(node.right, key);
+    }
+
+    private class DepthIterator implements Iterator<V> {
+
+        private AbstrLIFOInterface<BinaryTreeNode> stack;
+        private BinaryTreeNode current;
+        
+        public DepthIterator() {
+            try {
+                stack = new AbstrLIFO();
+                stack.vloz(root);
+            } catch (KolekceException ex) {
+                Logger.getLogger(AbstrTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.jePrazdny();
+        }
+
+        @Override
+        public V next() {          
+            V result = null;         
+            try {
+                current = stack.odeber();
+                result = current.getValue();
+                
+                if (current.right != null) {
+                    stack.vloz(current.right);
+                }
+                if(current.left != null){
+                    stack.vloz(current.left);
+                }
+                
+                
+            } catch (KolekceException ex) {
+                Logger.getLogger(AbstrTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            return result;
+            
+        }
+
+        @Override
+        public void remove() {
+            try {
+                odeber(current.key);
+            } catch (BinaryTreeException ex) {
+                Logger.getLogger(AbstrTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    private class BreathIterator implements Iterator<V> {
+
+        private AbstrFIFOInterface<BinaryTreeNode> fronta = null;
+        private BinaryTreeNode current;
+        
+        public BreathIterator() {
+
+            try {
+                fronta = new AbstrFIFO<>();
+                fronta.vloz(root);
+            } catch (KolekceException ex) {
+                Logger.getLogger(AbstrTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !fronta.jePrazdny();
+        }
+
+        @Override
+        public V next() {
+            V result = null;           
+            try {
+                current = fronta.odeber();
+                result = current.getValue();
+
+                if(current.left != null){
+                    fronta.vloz(current.left);
+                }
+                if (current.right != null) {
+                    fronta.vloz(current.right);
+                }
+                
+            } catch (KolekceException ex) {
+                Logger.getLogger(AbstrTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            return result;
+        }
+
+        @Override
+        public void remove() {
+            try {
+                odeber(current.key);
+            } catch (BinaryTreeException ex) {
+                Logger.getLogger(AbstrTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+}

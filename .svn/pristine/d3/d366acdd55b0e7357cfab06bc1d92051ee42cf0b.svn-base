@@ -1,0 +1,42 @@
+package idats_b_vondra;
+
+import java.util.Iterator;
+import kolekce.AbstrTable;
+import kolekce.BinaryTreeException;
+import kolekce.eTypProhl;
+import kolekce.interfaces.AbstrTableInterface;
+
+/**
+ *
+ * @author user
+ */
+public class IDATS_B_Vondra {
+
+    /**
+     * @param args the command line arguments
+     * @throws kolekce.BinaryTreeException
+     */
+    public static void main(String[] args) throws BinaryTreeException {
+        AbstrTableInterface<String,String> table = new AbstrTable<>();
+             
+        table.vloz("D", "A1");
+        table.vloz("E", "A2");
+        table.vloz("C", "A3");
+        table.vloz("F", "A5");
+        table.vloz("A", "A6");
+        
+        Iterator<String> iterator = table.vytvorIterator(eTypProhl.SIRKA);
+        
+        while(iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
+        System.out.println("");
+        
+        iterator = table.vytvorIterator(eTypProhl.HLOUBKA);
+        
+        while(iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
+    }
+    
+}

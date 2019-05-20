@@ -1,0 +1,45 @@
+
+package kolekce;
+
+import kolekce.interfaces.KolekceInterface;
+import kolekce.interfaces.AbstrFIFOInterface;
+import java.util.Iterator;
+
+/**
+ *
+ * @author Tomáš Vondra
+ * @param <T>
+ */
+public class AbstrFIFO<T> implements AbstrFIFOInterface<T>{
+
+    private final KolekceInterface<T> seznam;
+    
+    public AbstrFIFO() throws KolekceException{
+        this.seznam = new Seznam<>();
+    }
+    @Override
+    public void zrus() {
+        seznam.zrus();
+    }
+
+    @Override
+    public boolean jePrazdny() {
+        return seznam.jePrazdny();
+    }
+
+    @Override
+    public void vloz(T data) throws KolekceException {
+        seznam.pridej(data);
+    }
+
+    @Override
+    public T odeber() throws KolekceException {
+        return seznam.odeberPrvni();
+    }
+
+    @Override
+    public Iterator vytvorIterator() {
+        return seznam.iterator();
+    }
+
+}

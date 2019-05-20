@@ -1,0 +1,49 @@
+package idats_b_vondra;
+
+import java.io.IOException;
+import java.util.Iterator;
+import kolekce.AbstrTable;
+import kolekce.KolekceException;
+import kolekce.eTypProhl;
+import kolekce.interfaces.AbstrTableInterface;
+import pamatky.Pamatky;
+
+/**
+ *
+ * @author user
+ */
+public class IDATS_B_Vondra {
+
+    /**
+     * @param args the command line arguments
+     * @throws kolekce.KolekceException
+     * 
+     *      D
+     *    C   E
+     * A        F
+     * @throws java.io.IOException
+     */
+    
+    public static void main(String[] args) throws KolekceException, IOException {
+        //AbstrTableInterface<String,String> table = new AbstrTable<>();
+        Pamatky pamatky = new Pamatky();
+        pamatky.importDatZTXT();
+        
+        Iterator iterator = pamatky.vytvorIterator(eTypProhl.SIRKA);
+        
+        while(iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
+        
+        
+//        table.vloz("D", "D1");
+//        table.vloz("E", "E1");
+//        table.vloz("C", "C1");
+//        table.vloz("F", "F1");
+//        table.vloz("A", "A1");
+        
+        
+        
+    }
+    
+}

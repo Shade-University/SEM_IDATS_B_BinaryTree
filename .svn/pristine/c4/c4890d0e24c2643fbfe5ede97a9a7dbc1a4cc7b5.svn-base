@@ -1,0 +1,69 @@
+package idats_b_vondra;
+
+import java.util.Iterator;
+import kolekce.AbstrTable;
+import kolekce.KolekceException;
+import kolekce.eTypProhl;
+import kolekce.interfaces.AbstrTableInterface;
+
+/**
+ *
+ * @author user
+ */
+public class IDATS_B_Vondra {
+
+    /**
+     * @param args the command line arguments
+     * @throws kolekce.KolekceException
+     * 
+     *      D
+     *    C   E
+     * A        F
+     */
+    
+    public static void main(String[] args) throws KolekceException {
+        AbstrTableInterface<String,String> table = new AbstrTable<>();
+             
+        table.vloz("D", "D1");
+        table.vloz("E", "E1");
+        table.vloz("C", "C1");
+        table.vloz("F", "F1");
+        table.vloz("A", "A1");
+        
+        Iterator iterator = table.vytvorIterator(eTypProhl.SIRKA);
+       
+        while(iterator.hasNext()){
+            System.out.print(iterator.next() + " ");
+        }
+        System.out.println("");
+        
+        
+        System.out.println(table.odeber("D"));
+        
+        iterator = table.vytvorIterator(eTypProhl.SIRKA);
+       
+        while(iterator.hasNext()){
+            System.out.print(iterator.next() + " ");
+        }
+        System.out.println("");
+        
+        System.out.println(table.odeber("A"));
+        
+        iterator = table.vytvorIterator(eTypProhl.SIRKA);
+       
+        while(iterator.hasNext()){
+            System.out.print(iterator.next() + " ");
+        }
+        System.out.println("");
+        
+        System.out.println(table.odeber("C"));
+        
+        iterator = table.vytvorIterator(eTypProhl.SIRKA);
+       
+        while(iterator.hasNext()){
+            System.out.print(iterator.next() + " ");
+        }
+        System.out.println("");
+    }
+    
+}

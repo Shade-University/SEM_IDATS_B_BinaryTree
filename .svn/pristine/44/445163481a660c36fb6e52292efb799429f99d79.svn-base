@@ -1,0 +1,19 @@
+package pamatky;
+
+import java.util.Iterator;
+import kolekce.eTypProhl;
+
+/**
+ *
+ * @author user
+ */
+public interface PamatkyInterface {
+    public int importDatZTXT();
+    public int vlozZamek(Zamek zamek);
+    public Zamek najdiZamek(String klic);
+    public Zamek odeberZamek(String klic);
+    public void zrus();
+    public void prebuduj();
+    public void nastavKlic(eTypKey typ);
+    public Iterator vytvorIterator(eTypProhl typ);
+}

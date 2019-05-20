@@ -1,0 +1,27 @@
+
+package IO;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ *
+ * @author Tomáš Vondra
+ * Library class pro regex parsing
+ */
+public final class RegexMatcher {
+    
+    private RegexMatcher() {};
+    
+    public static String getMatch(String text, String pattern, int group){
+        Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
+        Matcher m = p.matcher(text);
+        
+        if(m.find()){
+            return m.group(group);
+        }
+        
+        return null;
+    }
+
+}
